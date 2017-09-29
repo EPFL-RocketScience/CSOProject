@@ -44,8 +44,11 @@ Dt      = 1;             % capture time [s]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % 2.1 Cinetic moments
-L_D     = I_D*w_D;
-L_C     = I_C*w_C;
+I_D_prim= DCM_D'*I_D*DCM_D;
+I_C_prim= DCM_C'*I_C*DCM_C;
+
+L_D     = I_D_prim*w_D + (I_D_prim + M_D*((d_r'*d_r)*eye(3)-d_r*d_r'))*(cross(d_r,v_D));
+L_C     = I_C_prim*w_C;
 
 % 2.2 momentums
 P_D     = M_D*v_D;
@@ -55,16 +58,13 @@ P_C     = M_C*v_C;
 R_D     =  d_r*(M_C/(M_D+M_C));
 R_C     = -d_r*(M_D/(M_D+M_C));
 
-I_D_prim= DCM_D'*I_D*DCM_D;
-I_C_prim= DCM_C'*I_C*DCM_C;
-
 J_D_prim=I_D_prim + M_D*((R_D'*R_D)*eye(3)-R_D*R_D');
 J_C_prim=I_C_prim + M_C*((R_C'*R_C)*eye(3)-R_C*R_C'); 
 
 % 2.4 Conservation of moments 
 M_tot   = M_D + M_C;
 J_tot   = J_D_prim + J_C_prim;
-L_tot   = L_D + L_C; % faux! prendre en compte
+L_tot   = L_D + L_C; 
 P_tot   = P_D + P_C;
 
 % 2.5 New system velocities
